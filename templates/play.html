@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playing - {{ .Video.Title }}</title>
+  <link rel="stylesheet" href="../src/play.css">
+</head>
+
+<body>
+  <a href="/" title="Back to video list">
+    <h1 style="margin: 0 5px;">Vidz Streamer</h1>
+  </a>
+  <div class="title">{{ .Video.Title }}</div>
+  <video id="videojs" preload="auto" width="640" height="264" controls class="video-js vjs-default-skin vjs-big-play-centered">>
+    <source src="/media{{ .Video.Path }}" type="{{ .Video.Type }}">
+    Your browser does not support the video tag.
+  </video>
+  <div style="max-width:90%; margin-left: auto;" class="links">
+    <a href="/">Home</a>
+    {{ if .Prev }}
+      <a href="/videoplayer?id={{ .Prev }}" title="Play Previous Video">&laquo; Prev</a>
+    {{ end }}
+
+    {{ if .Next }}
+      <a href="/videoplayer?id={{ .Next }}" title="Play Next Video">&raquo; Next</a>
+    {{ end }}
+  </div>
+
+  <a class="btn-delete" href="/?id={{ .Video.ID }}" role="button" data-id="{{ .Video.ID }}" title="Delete this video">
+    <h4>Delete Video</h4>  
+  </a>
+  <script src="../src/main.js" type="module" defer></script>
+</body>
+</html>

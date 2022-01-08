@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vidz</title>
+  <link rel="stylesheet" href="../src/index.css">
+</head>
+
+<body>
+  <h1 style="margin: 2px 0 5px 0; padding: 5px;">Vidz Streamer</h1>
+  <div class="container">
+    <form id="search_form">
+      <input type="text" id="search_input" placeholder="Search for video by title..." name="query" />
+    </form>
+
+    {{ range .Videos }}
+    <div class="video-row" id="{{ .ID }}">
+      <a class="video-row-left" href="/videoplayer?id={{ .ID }}">
+        <video width="100" height="50" class="vid">
+          <source src="/media{{ .Path }}" type="{{ .Type }}">
+        </video>
+        <div class="metadata">
+          <span class="title">{{ .Title }}</span>
+          <span class="size">{{ .HSize }}</span>
+        </div>
+      </a>
+    </div>
+    {{ end }}
+
+    <!-- Add pagination -->
+    <div class="pagination">
+      {{ if .Prev }}
+      <a href="/?page={{ .Prev }}">&laquo;</a>
+      {{ end }}
+
+      <!-- Current Page -->
+      <a disabled style="color: rgb(184, 194, 235);">{{ .Page }}</a>
+
+      {{ if .Next }}
+      <a href="/?page={{ .Next }}">&raquo;</a>
+      {{ end }}
+    </div>
+
+  </div>
+</body>
+
+</html>

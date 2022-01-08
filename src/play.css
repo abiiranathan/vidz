@@ -1,0 +1,42 @@
+body {
+  margin: 0 auto 1rem auto;
+  padding: 0.5rem 1rem;
+  background: #f2f2f2;
+  max-width: 960px;
+  background-color: #333;
+  color: #efefef;
+  font-family: cursive sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+a h1 {
+  color: #eee;
+}
+
+.links a {
+  color: #ddd;
+  display: inline-block;
+  margin-right: 10px;
+  padding: 10px;
+}
+
+.title {
+  font-size: 16px;
+  margin: 0.5rem 0;
+  color: #ddd;
+}
+
+#videojs {
+  box-shadow: 0 0 2px 2px #4a4949;
+}
+
+.btn-delete {
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-left: 10px;
+}
