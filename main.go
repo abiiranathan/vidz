@@ -21,18 +21,41 @@ var static embed.FS
 var templates embed.FS
 
 var tmpl *template.Template
+var dbPath string
 
 func init() {
 	tmpl = template.Must(template.ParseFS(templates, "static/templates/*.html"))
+	// get binary path
+	path, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	abspath := filepath.Join(path, "videos.db")
+	if err != nil {
+		panic(err)
+	}
+
+	dbPath = abspath
 }
 
 func main() {
 	defaultFolder, _ := os.UserHomeDir()
 	dirname := flag.String("dirname", defaultFolder, "The directory to scan for videos")
 	port := flag.Int("port", 8080, "The port to listen on")
+	dbflag := flag.String("db", dbPath, "The database file to use")
 	refresh_db := flag.Bool("refresh_db", false, "Refresh the database")
 
 	flag.Parse()
+
+	// make sure db exists
+	if _, err := os.Stat(*dbflag); os.IsNotExist(err) {
+		fmt.Println("Creating database file: ", *dbflag)
+		_, err = os.Create(*dbflag)
+		if err != nil {
+			panic("Could not create database file: " + err.Error())
+		}
+	}
 
 	if *dirname == "" {
 		panic("No folder to watch specified in arguments and environment variable for HOME not set")
@@ -45,7 +68,7 @@ func main() {
 	}
 
 	// create a new video service
-	videoService := video.NewVideoService(db.New())
+	videoService := video.NewVideoService(db.New(*dbflag))
 	handler := routes.NewServeMux(videoService, tmpl, static)
 
 	// start watching the folder

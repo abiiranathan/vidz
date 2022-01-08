@@ -7,14 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func New() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("videos.db"), &gorm.Config{})
+func New(dbpath string) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open(dbpath), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	// Migrate the schema
 	db.AutoMigrate(&video.Video{})
-
 	return db
 }
