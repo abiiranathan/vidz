@@ -9,15 +9,13 @@ import (
 )
 
 // Return the number of videos in the database or an error
-func SyncDatabase(videoService VideoService, path string, refresh_db bool) (int, error) {
+func SyncDatabase(videoService *VideoService, path string, refresh_db bool) (int, error) {
 	if !refresh_db {
-		return videoService.Count()
+		return (*videoService).Count()
 	}
 
 	fmt.Printf("Crawling %s for videos in path: \n", path)
-	// print all supported formats in a single line
 	fmt.Printf("Supported formats: %s\n", constants.GetSupportedFormats())
-
 	var videos []Video
 
 	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
@@ -71,7 +69,7 @@ func SyncDatabase(videoService VideoService, path string, refresh_db bool) (int,
 	})
 
 	// save videos to database
-	err := videoService.SaveMany(videos)
+	err := (*videoService).SaveMany(videos)
 	if err != nil {
 		return 0, err
 	}

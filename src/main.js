@@ -1,44 +1,76 @@
 import "video.js/dist/video-js.css";
-import VideJS from "video.js";
-const element = document.querySelector("#videojs");
+import videojs from "video.js";
+import "../src/index.css";
+import playlist from "./videojs-playlist";
 
-new VideJS(element, {
-  loop: true,
+const player = videojs("#videojs", {
+  loop: false,
   autoplay: true,
   controls: true,
   responsive: true,
   aspectRatio: "16:9",
   fill: true,
+  playbackRates: [0.7, 1.0, 1.5, 2.0, 2.5, 3.0],
+  defaultVolume: 1,
 });
 
-const deleteButton = document.querySelector(".btn-delete");
-deleteButton.addEventListener("click", e => {
-  e.preventDefault();
+videojs.registerPlugin("playlist", playlist);
 
-  const id = deleteButton.getAttribute("data-id");
-  handledelete(id);
-});
-
-function handledelete(id) {
-  const url = "/?id=" + id;
-
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then(res => {
-      if (res.status === 200) {
-        return res.json();
-      }
-
-      throw new Error("Request failed!");
-    })
-    .then(() => {
-      window.location.href = "/";
-    })
-    .catch(err => {
-      console.log(err);
-    });
+function createSource(video) {
+  return {
+    name: video.title,
+    sources: [
+      {
+        src: "/media" + video.path,
+        type: video.type,
+      },
+    ],
+  };
 }
+
+async function fetchAllVideos(url) {
+  const response = await fetch(url);
+  const videos = await response.json();
+  return videos;
+}
+
+async function getPlaylist() {
+  const videos = await fetchAllVideos("/api/videos");
+
+  const playlist = [];
+  for (const video of videos) {
+    playlist.push(createSource(video));
+  }
+  return playlist;
+}
+
+async function initPlaylist() {
+  const playlist = await getPlaylist();
+  player.playlist(player, playlist);
+}
+
+function initSearch() {
+  const search_input = document.getElementById("search_input");
+
+  search_input.addEventListener("keydown", function (e) {
+    e.stopImmediatePropagation();
+  });
+
+  search_input.addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+      const search_value = search_input.value;
+      const search_url = "/api/videos?title=" + search_value;
+
+      fetchAllVideos(search_url).then(videos => {
+        const playlist = [];
+        for (const video of videos) {
+          playlist.push(createSource(video));
+        }
+        player.playlist(player, playlist);
+      });
+    }
+  });
+}
+
+initPlaylist();
+initSearch();

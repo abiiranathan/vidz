@@ -25,13 +25,13 @@ var dbPath string
 
 func init() {
 	tmpl = template.Must(template.ParseFS(templates, "static/templates/*.html"))
-	// get binary path
 	path, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	abspath := filepath.Join(path, "videos.db")
+	dir := filepath.Dir(path)
+	abspath := filepath.Join(dir, "videos.db")
 	if err != nil {
 		panic(err)
 	}
@@ -48,38 +48,21 @@ func main() {
 
 	flag.Parse()
 
-	// make sure db exists
-	if _, err := os.Stat(*dbflag); os.IsNotExist(err) {
-		fmt.Println("Creating database file: ", *dbflag)
-		_, err = os.Create(*dbflag)
-		if err != nil {
-			panic("Could not create database file: " + err.Error())
-		}
-	}
-
-	if *dirname == "" {
-		panic("No folder to watch specified in arguments and environment variable for HOME not set")
-	}
-
-	// convert to absolute path
 	folderToWatch, err := filepath.Abs(*dirname)
+
 	if err != nil {
 		log.Fatalf("Could not covert %s to absolute path: %s ", folderToWatch, err)
 	}
 
-	// create a new video service
 	videoService := video.NewVideoService(db.New(*dbflag))
-	handler := routes.NewServeMux(videoService, tmpl, static)
+	handler := routes.NewServeMux(&videoService, tmpl, static)
+	count, err := video.SyncDatabase(&videoService, folderToWatch, *refresh_db)
 
-	// start watching the folder
-	count, err := video.SyncDatabase(videoService, folderToWatch, *refresh_db)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("Found %d videos in %s\n", count, folderToWatch)
-
-	// start the server
 	log.Printf("Listening on port %d\n", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), handler))
 }

@@ -8,11 +8,10 @@ export default defineConfig({
     manifest: true,
     sourcemap: false,
     brotliSize: false,
-    chunkSizeWarningLimit: 700,
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: {
         main: resolve(__dirname, "templates/index.html"),
-        play: resolve(__dirname, "templates/play.html"),
         notfound: resolve(__dirname, "templates/404.html"),
       },
     },

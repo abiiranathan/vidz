@@ -1,135 +1,90 @@
-body {
-  margin: 1rem auto;
-  padding: 0.5rem 1rem;
-  background: #f2f2f2;
-  max-width: 960px;
-  background-color: #333;
-  color: #efefef;
-  overflow-x: hidden;
-  font-family: cursive sans-serif;
+* {
+  box-sizing: border-box;
+  margin: 0;
 }
 
-.container {
-  width: 100%;
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 0.5rem;
+}
+
+body {
+  margin: 0 auto 1rem auto;
+  padding: 0.5rem 1rem;
+  background: #f2f2f2;
+  max-width: 780px;
+  background-color: #141a21;
+  color: #efefef;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
   overflow-x: hidden;
 }
 
 a {
-  padding: 0.5rem 1rem;
-  font-size: 1.1rem;
-  border: 1px solid #646363;
-  background-color: #414141;
-  color: #eee;
   text-decoration: none;
-  transition: 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
 }
 
-.video-row-left a {
-  flex: 1;
+a h1 {
+  color: #eee;
 }
 
-a:hover {
-  color: rgb(184, 194, 235);
-  background-color: #555454;
-}
-
-form {
-  padding: 0 1rem;
-}
-
-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  outline: none;
-  border-radius: 4px;
-  transition: 0.3s;
-  font-size: 1.1rem;
-  width: 100%;
-  max-width: 80%;
-  margin: 0.5rem 1rem;
-}
-.metadata {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  column-gap: 1rem;
-}
-
-.size {
-  font-size: 0.9rem;
-  color: rgb(228, 198, 159);
-  white-space: nowrap;
+.links a {
+  color: #ddd;
   display: inline-block;
-  margin-left: 1rem;
+  margin-right: 10px;
+  padding: 10px;
 }
 
-@media screen and (max-width: 600px) {
-  body {
-    padding: 0;
-  }
-
-  a {
-    align-items: center;
-    gap: 1rem;
-  }
-
-  input {
-    width: 100%;
-  }
-
-  .title {
-    font-size: 0.9rem;
-  }
+.title {
+  font-size: 16px;
+  margin: 0.5rem 0;
+  color: #ddd;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 1rem 0;
-  gap: 1rem;
-  max-width: 250px;
+#videojs {
+  box-shadow: 0 0 2px 2px #4a4949;
 }
 
-.pagination a {
-  display: grid;
-  place-items: center;
+#search_input {
+  width: 95%;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  color: #333;
+  outline: none;
+  background: #f2f2f2;
+  margin: 10px auto;
 }
 
-.video-row {
-  display: grid;
-  grid-template-columns: 90% 10%;
-  gap: 1rem;
-  margin: 1rem 0;
-  align-items: center;
+#vjs-playlist {
+  margin: 0 auto;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #2986bd;
+  overflow-x: hidden;
 }
 
-.video-row-left {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
+.vjs-playlist-item {
+  padding: 0.5rem 10px;
+  background: #141a21;
+  color: #ddd;
+  border-bottom: 1px solid #333;
+  list-style: none;
+  cursor: pointer;
+  transition: background 0.4s ease-in-out;
 }
 
-@media screen and (max-width: 600px) {
-  .video-row {
-    grid-template-columns: 1fr;
-    padding: 10px;
-  }
+.vjs-playlist-item:hover {
+  background: #303e4e;
+  border-bottom: 1px solid rgb(107, 97, 97);
+}
 
-  .video-row video {
-    width: 100%;
-    height: auto;
-  }
-
-  .video-row-left {
-    flex-direction: column;
-  }
-
-  .btn-delete {
-    display: none;
-  }
+.vjs-playlist-item.playing {
+  background: linear-gradient(red, rgb(182, 120, 5));
+  color: #fff;
+  pointer-events: none;
 }

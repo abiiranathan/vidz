@@ -2,7 +2,6 @@ package video
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -18,19 +17,6 @@ type Video struct {
 	Path         string    `json:"path" gorm:"unique, not null" sql:"type:varchar(255)"`
 	Type         string    `json:"type"`
 	LastModified time.Time `json:"last_modified"`
-}
-
-type VideoDetail struct {
-	Video Video `json:"video"`
-	Next  int   `json:"next"`
-	Prev  int   `json:"prev"`
-}
-
-type PaginatedVideos struct {
-	Videos []Video `json:"videos"`
-	Page   int     `json:"page"`
-	Next   int     `json:"next"`
-	Prev   int     `json:"prev"`
 }
 
 type VideoService interface {
@@ -89,8 +75,7 @@ func (v VideoServiceImpl) Save(video Video) error {
 	return nil
 }
 
-// Delete all videos from the database that are not in the given list
-// of videos (videosToKeep).
+// Save a slice of videos at once
 func (v VideoServiceImpl) SaveMany(videos []Video) error {
 	// fetch all videos from the database
 	var existingVideos []Video
@@ -122,17 +107,22 @@ func (v VideoServiceImpl) SaveMany(videos []Video) error {
 		}
 	}
 
-	// save videos that are in the videosToBeSaved map
+	// Re-create the videos that are in the videosToBeSaved map
+	// and update the videos that are already in the database
+	// in a single transaction
+	var newVideos []Video
 	for _, video := range videos {
 		if _, ok := existingVideosMap[video.Path]; !ok {
-			err := v.db.Create(&video).Error
-			if err != nil {
-				return err
-			}
+			newVideos = append(newVideos, video)
 		}
 	}
 
-	return nil
+	// if no videos returned, return
+	if len(newVideos) == 0 {
+		return nil
+	}
+
+	return v.db.Create(&newVideos).Error
 }
 
 // implement VideoService Delete
@@ -147,8 +137,7 @@ func (v VideoServiceImpl) Delete(id int) error {
 	if err != nil {
 		return err
 	}
-	// delete the file
-	os.Remove(video.Path)
+
 	return nil
 }
 
