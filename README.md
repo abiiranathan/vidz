@@ -6,9 +6,9 @@ Vidz walks your file system in the path provided on the command-line (or default
 
 ## Building executables
 
-make linux
-make windows
-make darwin (not tested on Mac)
+- make linux
+- make windows
+- make darwin (not tested on Mac)
 
 ### Help
 
