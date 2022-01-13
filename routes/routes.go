@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 	"vidz/video"
 )
 
@@ -76,6 +77,12 @@ func (r *StatusRecorder) WriteHeader(status int) {
 
 func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("application paniced with error: %v", err)
+			}
+		}()
+
 		recorder := &StatusRecorder{
 			ResponseWriter: w,
 			Status:         200,
@@ -89,14 +96,16 @@ func LoggerMiddleware(next http.Handler) http.Handler {
 			ip = r.Header.Get("X-Forwarded-For")
 		}
 
+		start := time.Now()
 		next.ServeHTTP(w, r)
-		log.Printf("%s %d %s %s %s", r.Method, recorder.Status, r.URL, r.Proto, ip)
+		ms := fmt.Sprintf("%dms", time.Since(start).Milliseconds())
+		log.Printf("%s %d %s %s %s", r.Method, recorder.Status, ms, r.URL, ip)
 	})
 }
 
 func NewServeMux(videoService *video.VideoService, tmpl *template.Template, static embed.FS) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.Handle("/", LoggerMiddleware(Index(tmpl)))
+	mux.Handle("/", Index(tmpl))
 	mux.Handle("/static/", http.FileServer(http.FS(static)))
 	mux.Handle("/media/", http.StripPrefix("/media", http.HandlerFunc(MediaStreamHandler(*videoService))))
 	mux.HandleFunc("/api/videos", VideoListApi(*videoService))
